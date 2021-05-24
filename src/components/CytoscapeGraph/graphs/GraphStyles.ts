@@ -215,21 +215,32 @@ export class GraphStyles {
       icons = `<span class="${NodeIconCB} ${iconMargin}"></span> ${icons}`;
     }
     if (cyGlobal.showVirtualServices && node.hasVS) {
-      icons = `<span class="${NodeIconVS} ${iconMargin}"></span> ${icons}`;
-      if (node.hasRequestRouting) {
-        icons = `${icons} <span class="${NodeIconRequestRouting} ${iconMargin}"></span>`;
-      }
-      if (node.hasFaultInjection) {
-        icons = `${icons} <span class="${NodeIconFaultInjection} ${iconMargin}"></span>`;
-      }
-      if (node.hasTrafficShifting) {
-        icons = `${icons} <span class="${NodeIconTrafficShifting} ${iconMargin}"></span>`;
-      }
-      if (node.hasTCPTrafficShifting) {
-        icons = `${icons} <span class="${NodeIconTCPTrafficShifting} ${iconMargin}"></span>`;
-      }
-      if (node.hasRequestTimeouts) {
-        icons = `${icons} <span class="${NodeIconRequestTimeouts} ${iconMargin}"></span>`;
+      // If there's an additional traffic scenario present then it's assumed
+      // that there is a VS present so the VS badge is omitted.
+      const hasKialiScenario =
+        node.hasRequestRouting ||
+        node.hasFaultInjection ||
+        node.hasTrafficShifting ||
+        node.hasTCPTrafficShifting ||
+        node.hasRequestTimeouts;
+      if (!hasKialiScenario) {
+        icons = `<span class="${NodeIconVS} ${iconMargin}"></span> ${icons}`;
+      } else {
+        if (node.hasRequestRouting) {
+          icons = `<span class="${NodeIconRequestRouting} ${iconMargin}"></span> ${icons}`;
+        }
+        if (node.hasFaultInjection) {
+          icons = `${icons} <span class="${NodeIconFaultInjection} ${iconMargin}"></span> ${icons}`;
+        }
+        if (node.hasTrafficShifting) {
+          icons = `${icons} <span class="${NodeIconTrafficShifting} ${iconMargin}"></span> ${icons}`;
+        }
+        if (node.hasTCPTrafficShifting) {
+          icons = `${icons} <span class="${NodeIconTCPTrafficShifting} ${iconMargin}"></span> ${icons}`;
+        }
+        if (node.hasRequestTimeouts) {
+          icons = `${icons} <span class="${NodeIconRequestTimeouts} ${iconMargin}"></span> ${icons}`;
+        }
       }
     }
     const hasIcon = icons.length > 0;
