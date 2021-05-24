@@ -55,6 +55,11 @@ const NodeIconCB = icons.istio.circuitBreaker.className; // bolt
 const NodeIconMS = icons.istio.missingSidecar.className; // exclamation
 const NodeIconRoot = icons.istio.root.className; // alt-arrow-circle-right
 const NodeIconVS = icons.istio.virtualService.className; // code-branch
+const NodeIconRequestRouting = icons.istio.requestRouting.className; // cubes
+const NodeIconFaultInjection = icons.istio.faultInjection.className; // ban
+const NodeIconTrafficShifting = icons.istio.trafficShifting.className; // balance-scale
+const NodeIconTCPTrafficShifting = icons.istio.tcpTrafficShifting.className; // balance-scale
+const NodeIconRequestTimeouts = icons.istio.requestTimeouts.className; // clock
 const NodeTextColor = PFColors.Black1000;
 const NodeTextColorBox = PFColors.White;
 const NodeTextBackgroundColor = PFColors.White;
@@ -211,6 +216,21 @@ export class GraphStyles {
     }
     if (cyGlobal.showVirtualServices && node.hasVS) {
       icons = `<span class="${NodeIconVS} ${iconMargin}"></span> ${icons}`;
+      if (node.hasRequestRouting) {
+        icons = `${icons} <span class="${NodeIconRequestRouting} ${iconMargin}"></span>`;
+      }
+      if (node.hasFaultInjection) {
+        icons = `${icons} <span class="${NodeIconFaultInjection} ${iconMargin}"></span>`;
+      }
+      if (node.hasTrafficShifting) {
+        icons = `${icons} <span class="${NodeIconTrafficShifting} ${iconMargin}"></span>`;
+      }
+      if (node.hasTCPTrafficShifting) {
+        icons = `${icons} <span class="${NodeIconTCPTrafficShifting} ${iconMargin}"></span>`;
+      }
+      if (node.hasRequestTimeouts) {
+        icons = `${icons} <span class="${NodeIconRequestTimeouts} ${iconMargin}"></span>`;
+      }
     }
     const hasIcon = icons.length > 0;
     if (hasIcon) {
