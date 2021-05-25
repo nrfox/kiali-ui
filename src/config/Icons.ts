@@ -12,6 +12,8 @@ export { solidPinIcon, hollowPinIcon };
 const mutIcons = {
   istio: {
     circuitBreaker: { className: 'fa fa-bolt', type: 'fa', name: 'bolt', ascii: '\uf0e7 ' },
+    disabledMtls: { className: 'pf-icon pf-icon-unlocked', type: 'fa', name: 'unlock', ascii: '\uE065 ' },
+    faultInjection: { className: 'fa fa-ban', type: 'fa', name: 'ban', ascii: '\uf05e ' },
     missingSidecar: {
       icon: BlueprintIcon,
       className: 'pf-icon pf-icon-blueprint',
@@ -21,14 +23,12 @@ const mutIcons = {
       color: 'red'
     },
     mtls: { className: 'pf-icon pf-icon-locked', type: 'pf', name: 'locked', ascii: '\uE02a ' },
-    disabledMtls: { className: 'pf-icon pf-icon-unlocked', type: 'fa', name: 'unlock', ascii: '\uE065 ' },
-    root: { className: 'fa fa-arrow-alt-circle-right', type: 'fa', name: 'arrow-alt-circle-right', ascii: '\uf35a ' },
-    virtualService: { className: 'fa fa-code-branch', type: 'fa', name: 'code-fork', ascii: '\uf126 ' },
     requestRouting: { className: 'fa fa-code-branch', type: 'fa', name: 'code-fork', ascii: '\uf126 ' },
-    faultInjection: { className: 'fa fa-ban', type: 'fa', name: 'ban', ascii: '\uf05e ' },
-    trafficShifting: { className: 'fa fa-percent', type: 'fa', name: 'percent', ascii: '\uf295 ' },
-    tcpTrafficShifting: { className: 'fa fa-percent', type: 'fa', name: 'percent', ascii: '\uf295 ' },
-    requestTimeouts: { className: 'fa fa-clock', type: 'fa', name: 'clock', ascii: '\uf017 ' }
+    requestTimeouts: { className: 'fa fa-clock', type: 'fa', name: 'clock', ascii: '\uf017 ' },
+    root: { className: 'fa fa-arrow-alt-circle-right', type: 'fa', name: 'arrow-alt-circle-right', ascii: '\uf35a ' },
+    tcpTrafficShifting: { className: 'fa fa-share-alt', type: 'fa', name: 'share-alt', ascii: '\uf1e0 ' },
+    trafficShifting: { className: 'fa fa-share-alt', type: 'fa', name: 'share-alt', ascii: '\uf1e0 ' },
+    virtualService: { className: 'fa fa-code-branch', type: 'fa', name: 'code-fork', ascii: '\uf126 ' }
   }
 };
 
