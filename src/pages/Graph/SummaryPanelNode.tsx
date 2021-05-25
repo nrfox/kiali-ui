@@ -158,6 +158,8 @@ export class SummaryPanelNode extends React.Component<SummaryPanelNodeProps, Sum
     hasTCPTrafficShifting?: boolean,
     hasRequestTimeouts?: boolean
   ) => {
+    const hasTrafficScenario =
+      hasRequestRouting || hasFaultInjection || hasTrafficShifting || hasTCPTrafficShifting || hasRequestTimeouts;
     return (
       <div style={{ marginTop: '10px', marginBottom: '10px' }}>
         {hasCB && (
@@ -166,7 +168,7 @@ export class SummaryPanelNode extends React.Component<SummaryPanelNodeProps, Sum
             <span style={{ paddingLeft: '4px' }}>Has Circuit Breaker</span>
           </div>
         )}
-        {hasVS && (
+        {hasVS && !hasTrafficScenario && (
           <div>
             <KialiIcon.VirtualService />
             <span style={{ paddingLeft: '4px' }}>Has Virtual Service</span>
