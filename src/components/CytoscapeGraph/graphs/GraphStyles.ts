@@ -74,9 +74,9 @@ const NodeTextFontSizeHover = '11px';
 const NodeTextFontSizeHoverBox = '13px';
 const NodeWidth = NodeHeight;
 
-const iconMargin = style({
+const defaultIconMargin = {
   marginLeft: '1px'
-});
+};
 
 const iconsDefault = style({
   alignItems: 'center',
@@ -205,11 +205,13 @@ export class GraphStyles {
     const isOutside = node.isOutside;
 
     let icons = '';
+    // Put a little more space between icons when a badge has multiple icons
+    const iconMargin = () => (icons === '' ? style(defaultIconMargin) : style({ marginRight: '2px' }));
     if (node.isRoot) {
-      icons = `<span class="${NodeIconRoot} ${iconMargin}"></span> ${icons}`;
+      icons = `<span class="${NodeIconRoot} ${iconMargin()}"></span> ${icons}`;
     }
     if (cyGlobal.showMissingSidecars && node.hasMissingSC) {
-      icons = `<span class="${NodeIconMS} ${iconMargin}"></span> ${icons}`;
+      icons = `<span class="${NodeIconMS} ${iconMargin()}"></span> ${icons}`;
     }
     if (cyGlobal.showVirtualServices && node.hasVS) {
       // If there's an additional traffic scenario present then it's assumed
@@ -222,25 +224,25 @@ export class GraphStyles {
         node.hasTCPTrafficShifting ||
         node.hasTrafficShifting;
       if (!hasKialiScenario) {
-        icons = `<span class="${NodeIconVS} ${iconMargin}"></span> ${icons}`;
+        icons = `<span class="${NodeIconVS} ${iconMargin()}"></span> ${icons}`;
       } else {
         if (node.hasRequestRouting) {
-          icons = `<span class="${NodeIconRequestRouting} ${iconMargin}"></span> ${icons}`;
+          icons = `<span class="${NodeIconRequestRouting} ${iconMargin()}"></span> ${icons}`;
         }
         if (node.hasFaultInjection) {
-          icons = `${icons} <span class="${NodeIconFaultInjection} ${iconMargin}"></span> ${icons}`;
+          icons = `<span class="${NodeIconFaultInjection} ${iconMargin()}"></span> ${icons}`;
         }
         if (node.hasTrafficShifting) {
-          icons = `${icons} <span class="${NodeIconTrafficShifting} ${iconMargin}"></span> ${icons}`;
+          icons = `<span class="${NodeIconTrafficShifting} ${iconMargin()}"></span> ${icons}`;
         }
         if (node.hasTCPTrafficShifting) {
-          icons = `${icons} <span class="${NodeIconTCPTrafficShifting} ${iconMargin}"></span> ${icons}`;
+          icons = `<span class="${NodeIconTCPTrafficShifting} ${iconMargin()}"></span> ${icons}`;
         }
         if (node.hasRequestTimeout) {
-          icons = `${icons} <span class="${NodeIconRequestTimeout} ${iconMargin}"></span> ${icons}`;
+          icons = `<span class="${NodeIconRequestTimeout} ${iconMargin()}"></span> ${icons}`;
         }
         if (node.hasCB) {
-          icons = `<span class="${NodeIconCB} ${iconMargin}"></span> ${icons}`;
+          icons = `<span class="${NodeIconCB} ${iconMargin()}"></span> ${icons}`;
         }
       }
     }
