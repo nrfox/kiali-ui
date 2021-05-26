@@ -149,6 +149,7 @@ export default class CytoscapeGraph extends React.Component<CytoscapeGraphProps>
       this.props.showMissingSidecars !== nextProps.showMissingSidecars ||
       this.props.showTrafficAnimation !== nextProps.showTrafficAnimation ||
       this.props.showVirtualServices !== nextProps.showVirtualServices ||
+      // TODO: Add show other badges
       this.props.trace !== nextProps.trace;
 
     return result;
