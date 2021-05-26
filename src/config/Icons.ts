@@ -24,7 +24,7 @@ const mutIcons = {
     },
     mtls: { className: 'pf-icon pf-icon-locked', type: 'pf', name: 'locked', ascii: '\uE02a ' },
     requestRouting: { className: 'fa fa-code-branch', type: 'fa', name: 'code-fork', ascii: '\uf126 ' },
-    requestTimeouts: { className: 'fa fa-clock', type: 'fa', name: 'clock', ascii: '\uf017 ' },
+    requestTimeout: { className: 'fa fa-clock', type: 'fa', name: 'clock', ascii: '\uf017 ' },
     root: { className: 'fa fa-arrow-alt-circle-right', type: 'fa', name: 'arrow-alt-circle-right', ascii: '\uf35a ' },
     tcpTrafficShifting: { className: 'fa fa-share-alt', type: 'fa', name: 'share-alt', ascii: '\uf1e0 ' },
     trafficShifting: { className: 'fa fa-share-alt', type: 'fa', name: 'share-alt', ascii: '\uf1e0 ' },

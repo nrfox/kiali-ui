@@ -103,7 +103,7 @@ export class SummaryPanelNode extends React.Component<SummaryPanelNodeProps, Sum
               nodeData.hasFaultInjection,
               nodeData.hasTrafficShifting,
               nodeData.hasTCPTrafficShifting,
-              nodeData.hasRequestTimeouts
+              nodeData.hasRequestTimeout
             )}
             {shouldRenderDestsList && <div>{destsList}</div>}
             {shouldRenderSvcList && <div>{servicesList}</div>}
@@ -156,10 +156,10 @@ export class SummaryPanelNode extends React.Component<SummaryPanelNodeProps, Sum
     hasFaultInjection?: boolean,
     hasTrafficShifting?: boolean,
     hasTCPTrafficShifting?: boolean,
-    hasRequestTimeouts?: boolean
+    hasRequestTimeout?: boolean
   ) => {
     const hasTrafficScenario =
-      hasRequestRouting || hasFaultInjection || hasTrafficShifting || hasTCPTrafficShifting || hasRequestTimeouts;
+      hasRequestRouting || hasFaultInjection || hasTrafficShifting || hasTCPTrafficShifting || hasRequestTimeout;
     return (
       <div style={{ marginTop: '10px', marginBottom: '10px' }}>
         {hasCB && (
@@ -212,9 +212,9 @@ export class SummaryPanelNode extends React.Component<SummaryPanelNodeProps, Sum
             <span style={{ paddingLeft: '4px' }}>Has TCP Traffic Shifting</span>
           </div>
         )}
-        {hasRequestTimeouts && (
+        {hasRequestTimeout && (
           <div>
-            <KialiIcon.RequestTimeouts />
+            <KialiIcon.RequestTimeout />
             <span style={{ paddingLeft: '4px' }}>Has Request Timeouts</span>
           </div>
         )}

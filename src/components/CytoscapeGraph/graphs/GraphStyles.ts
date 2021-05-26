@@ -52,14 +52,14 @@ let NodeColorFillHoverDegraded: PFColorVal;
 let NodeColorFillHoverFailure: PFColorVal;
 const NodeHeight = '25px';
 const NodeIconCB = icons.istio.circuitBreaker.className; // bolt
+const NodeIconFaultInjection = icons.istio.faultInjection.className; // ban
 const NodeIconMS = icons.istio.missingSidecar.className; // exclamation
 const NodeIconRoot = icons.istio.root.className; // alt-arrow-circle-right
 const NodeIconVS = icons.istio.virtualService.className; // code-branch
-const NodeIconRequestRouting = icons.istio.requestRouting.className; // cubes
-const NodeIconFaultInjection = icons.istio.faultInjection.className; // ban
-const NodeIconTrafficShifting = icons.istio.trafficShifting.className; // balance-scale
-const NodeIconTCPTrafficShifting = icons.istio.tcpTrafficShifting.className; // balance-scale
-const NodeIconRequestTimeouts = icons.istio.requestTimeouts.className; // clock
+const NodeIconRequestRouting = icons.istio.requestRouting.className; // bode-branch
+const NodeIconRequestTimeout = icons.istio.requestTimeout.className; // clock
+const NodeIconTCPTrafficShifting = icons.istio.tcpTrafficShifting.className; // share-alt
+const NodeIconTrafficShifting = icons.istio.trafficShifting.className; // share-alt
 const NodeTextColor = PFColors.Black1000;
 const NodeTextColorBox = PFColors.White;
 const NodeTextBackgroundColor = PFColors.White;
@@ -222,7 +222,7 @@ export class GraphStyles {
         node.hasFaultInjection ||
         node.hasTrafficShifting ||
         node.hasTCPTrafficShifting ||
-        node.hasRequestTimeouts;
+        node.hasRequestTimeout;
       if (!hasKialiScenario) {
         icons = `<span class="${NodeIconVS} ${iconMargin}"></span> ${icons}`;
       } else {
@@ -238,8 +238,8 @@ export class GraphStyles {
         if (node.hasTCPTrafficShifting) {
           icons = `${icons} <span class="${NodeIconTCPTrafficShifting} ${iconMargin}"></span> ${icons}`;
         }
-        if (node.hasRequestTimeouts) {
-          icons = `${icons} <span class="${NodeIconRequestTimeouts} ${iconMargin}"></span> ${icons}`;
+        if (node.hasRequestTimeout) {
+          icons = `${icons} <span class="${NodeIconRequestTimeout} ${iconMargin}"></span> ${icons}`;
         }
       }
     }

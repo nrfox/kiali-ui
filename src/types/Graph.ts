@@ -189,12 +189,12 @@ export interface GraphNodeData {
   hasCB?: boolean;
   hasMissingSC?: boolean;
   hasVS?: boolean;
+  hasFaultInjection?: boolean;
   hasHealthConfig?: HealthAnnotationType;
   hasRequestRouting?: boolean;
-  hasFaultInjection?: boolean;
-  hasTrafficShifting?: boolean;
+  hasRequestTimeout?: boolean;
   hasTCPTrafficShifting?: boolean;
-  hasRequestTimeouts?: boolean;
+  hasTrafficShifting?: boolean;
   isBox?: string;
   isDead?: boolean;
   isIdle?: boolean;
