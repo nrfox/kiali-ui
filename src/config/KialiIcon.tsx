@@ -98,7 +98,7 @@ export const KialiIcon: { [name: string]: React.FunctionComponent<IconProps> } =
   Regex: (props: IconProps) => <AsteriskIcon className={props.className} />,
   Repository: (props: IconProps) => <RepositoryIcon className={props.className} />,
   RequestRouting: (props: IconProps) => <CodeBranchIcon className={props.className} />,
-  RequestTimeouts: (props: IconProps) => <OutlinedClockIcon className={props.className} />,
+  RequestTimeout: (props: IconProps) => <OutlinedClockIcon className={props.className} />,
   Services: (props: IconProps) => <ServiceIcon className={props.className} />,
   Stop: (props: IconProps) => <StopIcon className={props.className} />,
   Topology: (props: IconProps) => <TopologyIcon className={props.className} />,

@@ -215,7 +215,7 @@ export class SummaryPanelNode extends React.Component<SummaryPanelNodeProps, Sum
         {hasRequestTimeout && (
           <div>
             <KialiIcon.RequestTimeout />
-            <span style={{ paddingLeft: '4px' }}>Has Request Timeouts</span>
+            <span style={{ paddingLeft: '4px' }}>Has Request Timeout</span>
           </div>
         )}
       </div>
