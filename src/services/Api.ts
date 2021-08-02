@@ -1,8 +1,6 @@
-import axios, { AxiosError } from 'axios';
-
+import axios, { AxiosError, CancelToken } from 'axios';
 import { config } from '../config';
 import { LoginSession } from '../store/Store';
-
 import { App } from '../types/App';
 import { AppList } from '../types/AppList';
 import { AuthInfo } from '../types/Auth';
@@ -69,13 +67,14 @@ const basicAuth = (username: UserName, password: Password) => {
   return { username: username, password: password };
 };
 
-const newRequest = <P>(method: HTTP_VERBS, url: string, queryParams: any, data: any) =>
+const newRequest = <P>(method: HTTP_VERBS, url: string, queryParams: any, data: any, withCancel?: CancelToken) =>
   axios.request<P>({
     method: method,
     url: url,
     data: data,
     headers: getHeadersWithMethod(method),
-    params: queryParams
+    params: queryParams,
+    cancelToken: withCancel
   });
 
 interface LoginRequest {
@@ -116,12 +115,12 @@ export const checkOpenshiftAuth = async (data: any): Promise<Response<LoginSessi
   return newRequest<LoginSession>(HTTP_VERBS.POST, urls.authenticate, {}, data);
 };
 
-export const getStatus = () => {
-  return newRequest<ServerStatus>(HTTP_VERBS.GET, urls.status, {}, {});
+export const getStatus = (withCancel?: CancelToken) => {
+  return newRequest<ServerStatus>(HTTP_VERBS.GET, urls.status, {}, {}, withCancel);
 };
 
-export const getNamespaces = () => {
-  return newRequest<Namespace[]>(HTTP_VERBS.GET, urls.namespaces, {}, {});
+export const getNamespaces = (withCancel?: CancelToken) => {
+  return newRequest<Namespace[]>(HTTP_VERBS.GET, urls.namespaces, {}, {}, withCancel);
 };
 
 export const getNamespaceMetrics = (namespace: string, params: IstioMetricsOptions) => {
@@ -373,8 +372,8 @@ export const getGrafanaInfo = () => {
   return newRequest<GrafanaInfo>(HTTP_VERBS.GET, urls.grafana, {}, {});
 };
 
-export const getJaegerInfo = () => {
-  return newRequest<JaegerInfo>(HTTP_VERBS.GET, urls.jaeger, {}, {});
+export const getJaegerInfo = (withCancel?: CancelToken) => {
+  return newRequest<JaegerInfo>(HTTP_VERBS.GET, urls.jaeger, {}, {}, withCancel);
 };
 
 export const getAppTraces = (namespace: string, app: string, params: TracingQuery) => {
@@ -450,8 +449,8 @@ export const getNodeGraphElements = (node: NodeParamsType, params: any) => {
   }
 };
 
-export const getServerConfig = () => {
-  return newRequest<ServerConfig>(HTTP_VERBS.GET, urls.serverConfig, {}, {});
+export const getServerConfig = (withCancel?: CancelToken) => {
+  return newRequest<ServerConfig>(HTTP_VERBS.GET, urls.serverConfig, {}, {}, withCancel);
 };
 
 export const getServiceDetail = (

@@ -58,6 +58,8 @@ class TokenLogin implements LoginStrategy<WebLoginData> {
   public async perform(request: DispatchRequest<WebLoginData>): Promise<LoginResult> {
     const session = (await API.login({ username: '', password: '', token: request.data.password })).data;
 
+    // debugger;
+
     return {
       status: AuthResult.SUCCESS,
       session: session

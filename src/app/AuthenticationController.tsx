@@ -1,4 +1,5 @@
 import * as React from 'react';
+import axios, { CancelToken, CancelTokenSource } from 'axios';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import authenticationConfig, { isAuthStrategyOAuth } from '../config/AuthenticationConfig';
@@ -34,6 +35,7 @@ interface AuthenticationControllerReduxProps {
   checkCredentials: () => void;
   isLoginError: boolean;
   landingRoute?: string;
+  logout: () => void;
   setActiveNamespaces: (namespaces: Namespace[]) => void;
   setDuration: (duration: DurationInSeconds) => void;
   setJaegerInfo: (jaegerInfo: JaegerInfo | null) => void;
@@ -58,10 +60,20 @@ enum LoginStage {
 
 interface AuthenticationControllerState {
   stage: LoginStage;
-  isPostLoginError: boolean;
+  postLoginError?: string;
+  // pendingPostLoginActions should be set when calling postLoginActions
+  // and it should be cancelled when AuthController unmounts to ensure
+  // no memory leaks.
+  pendingPostLoginActions?: {
+    cancelTokenSource: CancelTokenSource;
+    pendingActions: Promise<void>;
+  };
 }
 
-class AuthenticationController extends React.Component<AuthenticationControllerProps, AuthenticationControllerState> {
+export class AuthenticationController extends React.Component<
+  AuthenticationControllerProps,
+  AuthenticationControllerState
+> {
   static readonly PostLoginErrorMsg =
     'You are logged in, but there was a problem when fetching some required server ' +
     'configurations. Please, try refreshing the page.';
@@ -70,13 +82,20 @@ class AuthenticationController extends React.Component<AuthenticationControllerP
     super(props);
     this.state = {
       stage: this.props.authenticated ? LoginStage.LOGGED_IN_AT_LOAD : LoginStage.LOGIN,
-      isPostLoginError: false
+      postLoginError: undefined
     };
   }
 
   componentDidMount(): void {
     if (this.state.stage === LoginStage.LOGGED_IN_AT_LOAD) {
-      this.doPostLoginActions();
+      const CancelToken = axios.CancelToken;
+      const source = CancelToken.source();
+      this.setState({
+        pendingPostLoginActions: {
+          pendingActions: this.doPostLoginActions(source.token),
+          cancelTokenSource: source
+        }
+      });
     } else {
       let dispatchLoginCycleOnLoad = false;
 
@@ -119,8 +138,15 @@ class AuthenticationController extends React.Component<AuthenticationControllerP
     _prevState: Readonly<AuthenticationControllerState>
   ): void {
     if (!prevProps.authenticated && this.props.authenticated) {
-      this.setState({ stage: LoginStage.POST_LOGIN });
-      this.doPostLoginActions();
+      const CancelToken = axios.CancelToken;
+      const source = CancelToken.source();
+      this.setState({
+        stage: LoginStage.POST_LOGIN,
+        pendingPostLoginActions: {
+          pendingActions: this.doPostLoginActions(source.token),
+          cancelTokenSource: source
+        }
+      });
     } else if (prevProps.authenticated && !this.props.authenticated) {
       this.setState({ stage: LoginStage.LOGIN });
     }
@@ -132,11 +158,17 @@ class AuthenticationController extends React.Component<AuthenticationControllerP
     this.setDocLayout();
   }
 
+  componentWillUnmount(): void {
+    if (this.state.pendingPostLoginActions) {
+      this.state.pendingPostLoginActions.cancelTokenSource.cancel();
+    }
+  }
+
   render() {
     if (this.state.stage === LoginStage.LOGGED_IN) {
       return this.props.protectedAreaComponent;
     } else if (this.state.stage === LoginStage.LOGGED_IN_AT_LOAD) {
-      return !this.state.isPostLoginError ? (
+      return !this.state.postLoginError ? (
         <InitializingScreen />
       ) : (
         <InitializingScreen errorMsg={AuthenticationController.PostLoginErrorMsg} />
@@ -144,26 +176,29 @@ class AuthenticationController extends React.Component<AuthenticationControllerP
     } else if (this.state.stage === LoginStage.POST_LOGIN) {
       // For OAuth/OpenID auth strategies, show/keep the initializing screen unless there
       // is an error.
-      if (!this.state.isPostLoginError && isAuthStrategyOAuth()) {
+      if (!this.state.postLoginError && isAuthStrategyOAuth()) {
         return <InitializingScreen />;
       }
 
-      return !this.state.isPostLoginError
+      return !this.state.postLoginError
         ? this.props.publicAreaComponent(true)
-        : this.props.publicAreaComponent(false, AuthenticationController.PostLoginErrorMsg);
+        : this.props.publicAreaComponent(false, this.state.postLoginError!);
     } else {
-      return this.props.publicAreaComponent(false);
+      return this.props.publicAreaComponent(false, this.state.postLoginError);
     }
   }
 
-  private doPostLoginActions = async () => {
+  private doPostLoginActions = async (cancelToken?: CancelToken) => {
+    // TODO: make promises cancellable here and do whatever cleanup is left to do to get this PR'd
+    // Pass in cancel token. SetState for promise where this is called along with token.
+    // Call cancel in componentwillunmount.
     try {
-      const getStatusPromise = API.getStatus()
+      const getStatusPromise = API.getStatus(cancelToken)
         .then(response => this.props.setServerStatus(response.data))
         .catch(error => {
           AlertUtils.addError('Error fetching server status.', error, 'default', MessageType.WARNING);
         });
-      const getJaegerInfoPromise = API.getJaegerInfo()
+      const getJaegerInfoPromise = API.getJaegerInfo(cancelToken)
         .then(response => this.props.setJaegerInfo(response.data))
         .catch(error => {
           this.props.setJaegerInfo(null);
@@ -176,8 +211,8 @@ class AuthenticationController extends React.Component<AuthenticationControllerP
         });
 
       const configs = await Promise.all([
-        API.getNamespaces(),
-        API.getServerConfig(),
+        API.getNamespaces(cancelToken),
+        API.getServerConfig(cancelToken),
         getStatusPromise,
         getJaegerInfoPromise
       ]);
@@ -190,12 +225,29 @@ class AuthenticationController extends React.Component<AuthenticationControllerP
         history.replace(this.props.landingRoute);
         this.props.setLandingRoute(undefined);
       }
-      this.setState({ stage: LoginStage.LOGGED_IN });
+      this.setState({ stage: LoginStage.LOGGED_IN, postLoginError: undefined });
     } catch (err) {
       console.error('Error on post-login actions.', err);
-      this.setState({ isPostLoginError: true });
+      this.setState({ postLoginError: this.generatePostLoginErrorMessage(err) });
+      // Logging the user out immediately is a better user experience than
+      // keeping them on the login page with an error message.
+      this.props.logout();
+      // Your login was sucessful but Kiali was unable connect to: <prom> service.
+      // Please ensure the <service> is healthy and reachable by Kiali then relogin.
+      // You will be logged out in {countdown}.
+      // 1. Display serverside message to user or at least one with better wording.
+      // 2. Logout user. This is more tricky since when logout happens a re-render happens
+      // so we'll need to track if the user has been previously logged out from this error
+      // message and display the message then. If they login again then that should be set to
+      // false again.
     }
   };
+
+  private generatePostLoginErrorMessage(err: any): string {
+    const errMsgTemplate = `Kiali failed to initialize due to '${err}'. Please ensure that services 
+    Kiali depends on such as Prometheus are healthy and reachable by Kiali then login again.`;
+    return errMsgTemplate;
+  }
 
   private applyUIDefaults() {
     const uiDefaults = serverConfig.kialiFeatureFlags.uiDefaults;
@@ -315,6 +367,7 @@ const mapStateToProps = (state: KialiAppState) => ({
 
 const mapDispatchToProps = (dispatch: KialiDispatch) => ({
   checkCredentials: () => dispatch(LoginThunkActions.checkCredentials()),
+  logout: () => dispatch(LoginThunkActions.logout()),
   setActiveNamespaces: bindActionCreators(NamespaceActions.setActiveNamespaces, dispatch),
   setDuration: bindActionCreators(UserSettingsActions.setDuration, dispatch),
   setJaegerInfo: bindActionCreators(JaegerActions.setInfo, dispatch),
